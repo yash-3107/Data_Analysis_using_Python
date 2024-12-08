@@ -57,7 +57,9 @@ fig_impedance = px.bar(newDF, x='filename', y='Battery_impedance',
                        color='Battery_impedance')
 fig_impedance.update_layout(xaxis_tickangle=-45)
 fig_impedance.show()
-    
+fig_re.write_html("graph1.html")
+fig_rct.write_html("graph2.html")
+fig_impedance.write_html("graph3.html")    
 
 
 
