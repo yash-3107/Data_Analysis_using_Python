@@ -35,41 +35,90 @@ for file in filesinDest:
         break
 
 #FINALLY MAGIC HAPPENSE 
-
+os.chdir(currentDirectory)
 # Plot: Filename vs Electrolyte Resistance (Re)
 fig_re = px.line(newDF, x='filename', y='Re', 
                  title='Filename vs Electrolyte Resistance (Re)',
                  labels={'filename': 'Filename', 'Re': 'Electrolyte Resistance (Re)'},
                  line_shape='linear', markers=True)
-fig_re.update_layout(xaxis_tickangle=-45, template='plotly_white')
-fig_re.show()
 
 # Plot: Filename vs Charge Transfer Resistance (Rct)
 fig_rct = px.line(newDF, x='filename', y='Rct', 
                   title='Filename vs Charge Transfer Resistance (Rct)',
                   labels={'filename': 'Filename', 'Rct': 'Charge Transfer Resistance (Rct)'},
                   line_shape='linear', markers=True)
-fig_rct.update_layout(xaxis_tickangle=-45, template='plotly_white')
-fig_rct.show()
 
 # Plot: Filename vs Battery Impedance
 fig_impedance = px.line(newDF, x='filename', y='Battery_impedance', 
                         title='Filename vs Battery Impedance',
                         labels={'filename': 'Filename', 'Battery_impedance': 'Battery Impedance'},
                         line_shape='linear', markers=True)
-fig_impedance.update_layout(xaxis_tickangle=-45, template='plotly_white')
-fig_impedance.show()
-os.chdir(currentDirectory)
 
+# Saving the plots as HTML files
+fig_re.write_html("fig_re.html")
+fig_rct.write_html("fig_rct.html")
+fig_impedance.write_html("fig_impedance.html")
+
+# Initialize Dash app
 app = dash.Dash(__name__)
+
+# Layout to display all three plots
 app.layout = html.Div(children=[
     html.H1("Multiple Plotly Graphs"),
     dcc.Graph(figure=fig_re),
     dcc.Graph(figure=fig_rct),
     dcc.Graph(figure=fig_impedance),
 ])
-    
+
+# Generate the app layout as HTML string
+html_layout = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotly Graphs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multiple Plotly Graphs</h1>
+    <div id="graph_re">{graph_re_html}</div>
+    <div id="graph_rct">{graph_rct_html}</div>
+    <div id="graph_impedance">{graph_impedance_html}</div>
+</body>
+</html>
+"""
+
+with open("fig_re.html", "r", encoding="utf-8") as f:
+    graph_re_html = f.read()
+
+with open("fig_rct.html", "r", encoding="utf-8") as f:
+    graph_rct_html = f.read()
+
+with open("fig_impedance.html", "r", encoding="utf-8") as f:
+    graph_impedance_html = f.read()
+
+graph_re_html = graph_re_html.replace("{", "{{").replace("}", "}}")
+graph_rct_html = graph_rct_html.replace("{", "{{").replace("}", "}}")
+graph_impedance_html = graph_impedance_html.replace("{", "{{").replace("}", "}}")
+
+# Combine them into the final HTML layout
+final_html_content = html_layout.replace("{graph_re_html}", graph_re_html)\
+                                .replace("{graph_rct_html}", graph_rct_html)\
+                                .replace("{graph_impedance_html}", graph_impedance_html)
+
+# Save to 'index.html'
+with open("index.html", "w", encoding="utf-8") as file:
+    file.write(final_html_content)
+
 if __name__ == "__main__":
     app.run_server(debug=True)
-
-
