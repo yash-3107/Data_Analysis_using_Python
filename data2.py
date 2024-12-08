@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import dash
+from dash import dcc, html
 
 currentDirectory = os.getcwd()
 
@@ -34,36 +36,40 @@ for file in filesinDest:
 
 #FINALLY MAGIC HAPPENSE 
 
-# Plot: Filename vs Re
-fig_re = px.bar(newDF, x='filename', y='Re', 
-                title='Filename vs Electrolyte Resistance (Re)',
-                labels={'filename': 'Filename', 'Re': 'Electrolyte Resistance (Re)'},
-                color='Re')
-fig_re.update_layout(xaxis_tickangle=-45)
+# Plot: Filename vs Electrolyte Resistance (Re)
+fig_re = px.line(newDF, x='filename', y='Re', 
+                 title='Filename vs Electrolyte Resistance (Re)',
+                 labels={'filename': 'Filename', 'Re': 'Electrolyte Resistance (Re)'},
+                 line_shape='linear', markers=True)
+fig_re.update_layout(xaxis_tickangle=-45, template='plotly_white')
 fig_re.show()
 
-# Plot: Filename vs Rct
-fig_rct = px.bar(newDF, x='filename', y='Rct', 
-                 title='Filename vs Charge Transfer Resistance (Rct)',
-                 labels={'filename': 'Filename', 'Rct': 'Charge Transfer Resistance (Rct)'},
-                 color='Rct')
-fig_rct.update_layout(xaxis_tickangle=-45)
+# Plot: Filename vs Charge Transfer Resistance (Rct)
+fig_rct = px.line(newDF, x='filename', y='Rct', 
+                  title='Filename vs Charge Transfer Resistance (Rct)',
+                  labels={'filename': 'Filename', 'Rct': 'Charge Transfer Resistance (Rct)'},
+                  line_shape='linear', markers=True)
+fig_rct.update_layout(xaxis_tickangle=-45, template='plotly_white')
 fig_rct.show()
 
 # Plot: Filename vs Battery Impedance
-fig_impedance = px.bar(newDF, x='filename', y='Battery_impedance', 
-                       title='Filename vs Battery Impedance',
-                       labels={'filename': 'Filename', 'Battery_impedance': 'Battery Impedance'},
-                       color='Battery_impedance')
-fig_impedance.update_layout(xaxis_tickangle=-45)
+fig_impedance = px.line(newDF, x='filename', y='Battery_impedance', 
+                        title='Filename vs Battery Impedance',
+                        labels={'filename': 'Filename', 'Battery_impedance': 'Battery Impedance'},
+                        line_shape='linear', markers=True)
+fig_impedance.update_layout(xaxis_tickangle=-45, template='plotly_white')
 fig_impedance.show()
-fig_re.write_html("graph1.html")
-fig_rct.write_html("graph2.html")
-fig_impedance.write_html("graph3.html")    
+os.chdir(currentDirectory)
 
-
-
+app = dash.Dash(__name__)
+app.layout = html.Div(children=[
+    html.H1("Multiple Plotly Graphs"),
+    dcc.Graph(figure=fig_re),
+    dcc.Graph(figure=fig_rct),
+    dcc.Graph(figure=fig_impedance),
+])
     
-
+if __name__ == "__main__":
+    app.run_server(debug=True)
 
 
