@@ -79,14 +79,14 @@ html_layout = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plotly Graphs</title>
     <style>
-        body {
+        body {{
             font-family: Arial, sans-serif;
             margin: 40px;
-        }
-        h1 {
+        }}
+        h1 {{
             text-align: center;
             margin-bottom: 20px;
-        }
+        }}
     </style>
 </head>
 <body>
@@ -107,14 +107,12 @@ with open("fig_rct.html", "r", encoding="utf-8") as f:
 with open("fig_impedance.html", "r", encoding="utf-8") as f:
     graph_impedance_html = f.read()
 
-graph_re_html = graph_re_html.replace("{", "{{").replace("}", "}}")
-graph_rct_html = graph_rct_html.replace("{", "{{").replace("}", "}}")
-graph_impedance_html = graph_impedance_html.replace("{", "{{").replace("}", "}}")
-
 # Combine them into the final HTML layout
-final_html_content = html_layout.replace("{graph_re_html}", graph_re_html)\
-                                .replace("{graph_rct_html}", graph_rct_html)\
-                                .replace("{graph_impedance_html}", graph_impedance_html)
+final_html_content = html_layout.format(
+    graph_re_html=graph_re_html,
+    graph_rct_html=graph_rct_html,
+    graph_impedance_html=graph_impedance_html
+)
 
 # Save to 'index.html'
 with open("index.html", "w", encoding="utf-8") as file:
